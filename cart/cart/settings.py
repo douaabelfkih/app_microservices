@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w0^uu41_nxf$_ysauzgadab#hsh4afwovos-vcn&k09#$jropf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['20.199.21.250']
 
 
 # Application definition
@@ -40,7 +40,24 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://20.199.21.250:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,10 +95,10 @@ WSGI_APPLICATION = 'cart.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cart',
-        'USER': 'postgres',
-        'PASSWORD': '0000',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'douaadb',
+        'USER': 'douaa',
+        'PASSWORD': 'douaapass',
         'HOST': 'db',
         'PORT': '5432',
     }

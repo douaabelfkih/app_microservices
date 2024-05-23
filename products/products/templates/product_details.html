@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails du Produit</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+        <!-- Add an element to display login status -->
+        <div id="login-status" class="mb-3"></div>
+    
+        <!-- Login form -->
+        <div id="login-form" class="mb-3">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    
+    <h1>Détails du Produit</h1>
+    {% if product %}
+        <!-- Affichez les détails du produit ici -->
+        <p>Nom : {{ product.name }}</p>
+        <p>Prix : {{ product.price }}€</p>
+        <p>Description : {{ product.description }}</p>
+        <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}">
+        <!-- Bouton "Ajouter au panier" avec identifiant unique -->
+        <form action="{% url 'check_authentication_and_add_to_cart' prodid=product.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <button type="submit">Ajouter au panier</button>
+        </form>
+    {% endif %}
+        <script>
+            $(document).ready(function() {
+                function getToken() {
+                return localStorage.getItem('access_token');
+            }
+
+            // Function to get the username from the JWT token
+            function getUserIDFromToken(token) {
+                if (!token) return null;
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    console.log('JWT Payload:', payload);
+                    return payload.user_id;
+                } catch (e) {
+                    console.error('Invalid token:', e);
+                    return null;
+                }
+            }
+            // Function to fetch user details using user_id
+            function fetchUserDetails(user_id) {
+                return $.ajax({
+                    url: `http://20.199.21.250:8001/auth/user/${user_id}/`,
+                    type: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+            }
+
+            // Display login status
+            function displayLoginStatus() {
+                const token = getToken();
+                const user_id = getUserIDFromToken(token);
+
+                if (user_id) {
+                    fetchUserDetails(user_id).done(function(user) {
+                        if (user) {
+                            $('#login-status').html(`<span>Welcome, ${user.username}</span>`);
+                            $('#login-form').hide();
+                        } else {
+                            
+                            $('#login-form').show();
+                        }
+                    }).fail(function() {
+                        
+                        $('#login-form').show();
+                    });
+                } else {
+                    
+                    $('#login-form').show();
+                }
+            }
+            // Handle login form submission
+            $('#loginForm').submit(function(event) {
+                event.preventDefault();
+                const username = $('#username').val();
+                const password = $('#password').val();
+
+                $.ajax({
+                    url: 'http://20.199.21.250:8001/auth/login/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username, password }),
+                    success: function(data) {
+                        console.log('Login successful:', data);  // Debug: log the success response
+                        localStorage.setItem('access_token', data.access);
+                        displayLoginStatus();
+                        //getProducts(); // Fetch products again after login
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error logging in:', xhr.responseText); // Debug: log the error response
+                        alert('Login failed');
+                    }
+                });
+            });
+                $("#addToCartBtn").on("click", function() {
+                    // Récupérer l'ID du produit à ajouter au panier
+                    var productId = $(this).data("product-id");
+                    
+                    // Créer un objet de données à envoyer avec la requête POST
+                    var requestData = {
+                        "product_id": productId
+                    };
+            
+                    // Envoyer la requête POST à l'URL de la vue add_to_cart
+                    $.ajax({
+                        url: "/add/",  // L'URL de la vue add_to_cart
+                        type: "POST",   // Méthode POST
+                        data: JSON.stringify(requestData),  // Données à envoyer (converties en JSON)
+                        contentType: "application/json",     // Type de contenu de la requête
+                        success: function(response) {
+                            // Gérer la réponse de la vue (si nécessaire)
+                            console.log("Produit ajouté au panier avec succès !");
+                        },
+                        error: function(xhr, status, error) {
+                            // Gérer les erreurs de la requête (si nécessaire)
+                            console.error("Erreur lors de l'ajout du produit au panier :", error);
+                        }
+                    });
+                });
+                displayLoginStatus();
+            });
+
+        </script>
+    
+</body>
+</html>

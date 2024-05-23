@@ -1,0 +1,9 @@
+"""     path('add/', add_to_cart, name='add_to_cart'),
+
+    path('addcart/', add_new_cart, name='add_new_cart'),
+    path('carts/', view_carts, name='view_carts'),
+    path('additemtocart/', add_item_to_cart, name='add_item_to_cart'),
+
+    path('api/cart/', CartView.as_view(), name='cart'),
+    path('api/cart/items/', CartItemView.as_view(), name='cart-items'),
+    path('api/cart/migrate/', MigrateCartView.as_view(), name='cart-migrate'), """

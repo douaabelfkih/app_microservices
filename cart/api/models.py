@@ -2,16 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # Ajoutez d'autres champs au besoin
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    session_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Cart for user {self.user.username}"
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product_id = models.IntegerField()  # Suppose que vous stockez juste l'ID du produit
+class CartItems(models.Model):
+    user_id = models.IntegerField()
+    product_id = models.IntegerField()
     quantity = models.IntegerField(default=1)
-
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
     def __str__(self):
-        return f"{self.quantity} x Product {self.product_id} in cart {self.cart.id}"
+        return f"User {self.user_id} - Product {self.product_id} - Quantity {self.quantity}"

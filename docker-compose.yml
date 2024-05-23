@@ -1,10 +1,23 @@
 version: '3'
 services:
+  store:
+    build: ./store
+    command: bash -c "python ./manage.py makemigrations && python ./manage.py migrate && python ./manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./store:/app
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - db
+    links:
+      - db
+      
   auth_app:
     build: ./authentification
     command: bash -c "python ./manage.py makemigrations && python ./manage.py migrate && python ./manage.py runserver 0.0.0.0:8001"
     volumes:
-      - .:/app
+      - ./authentification:/app
     ports:
       - "8001:8001"
     restart: always
@@ -17,7 +30,7 @@ services:
     build: ./products
     command: bash -c "python3 ./manage.py makemigrations && python3 ./manage.py migrate && python3 ./manage.py runserver 0.0.0.0:8002"
     volumes:
-      - .:/app
+      - ./products:/app
     ports:
       - "8002:8002"
     restart: always
@@ -28,9 +41,11 @@ services:
 
   cart_app:
     build: ./cart
-    command: bash -c "python3 ./manage.py makemigrations && python3 ./manage.py migrate && python3 ./manage.py runserver 0.0.0.0:8003"
+    command: bash -c "python3 ./manage.py runserver 0.0.0.0:8003"
+
+    #command: bash -c "python3 ./manage.py makemigrations && python3 ./manage.py migrate && python3 ./manage.py runserver 0.0.0.0:8003"
     volumes:
-      - .:/app
+      - ./cart:/app
     ports:
       - "8003:8003"
     restart: always
@@ -40,11 +55,22 @@ services:
       - db
 
   db:
-    image: postgres:10.1-alpine
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=douaadb
+      - POSTGRES_USER=douaa
+      - POSTGRES_PASSWORD=douaapass
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - '5432'
+  
+  redis:
+    image: redis:latest
+    hostname: redis
+    ports:
+      - "6379:6379"
+
 
 volumes:
   postgres_data:

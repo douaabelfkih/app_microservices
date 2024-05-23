@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Produits</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+    <!-- Add an element to display login status -->
+    <div id="login-status" class="mb-3"></div>
+    
+    <!-- Login form -->
+    <div id="login-form" class="mb-3">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    
+    <h1>Liste des Produits</h1>
+    <div id="products"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            // Function to get the JWT token from localStorage
+            function getToken() {
+                return localStorage.getItem('access_token');
+            }
+
+            // Function to get the username from the JWT token
+            function getUserIDFromToken(token) {
+                if (!token) return null;
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    console.log('JWT Payload:', payload);
+                    return payload.user_id;
+                } catch (e) {
+                    console.error('Invalid token:', e);
+                    return null;
+                }
+            }
+            // Function to fetch user details using user_id
+            function fetchUserDetails(user_id) {
+                return $.ajax({
+                    url: `http://20.199.21.250:8001/auth/user/${user_id}/`,
+                    type: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+            }
+
+            // Display login status
+            function displayLoginStatus() {
+                const token = getToken();
+                const user_id = getUserIDFromToken(token);
+
+                if (user_id) {
+                    fetchUserDetails(user_id).done(function(user) {
+                        if (user) {
+                            $('#login-status').html(`<span>Welcome, ${user.username}</span>`);
+                            $('#login-form').hide();
+                        } else {
+                            //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
+                            $('#login-form').show();
+                        }
+                    }).fail(function() {
+                        //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
+                        $('#login-form').show();
+                    });
+                } else {
+                    //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
+                    $('#login-form').show();
+                }
+            }
+
+            // Get products and include the JWT token in the request
+            function getProducts() {
+                $.ajax({
+                    url: 'http://20.199.21.250:8002/api/products/',
+                    type: 'GET',
+                    success: function(data) {
+                        // For each product in the JSON response
+                        $('#products').empty();  // Clear existing products
+                        data.forEach(function(product) {
+                            // Build the HTML to display this product's details
+                            var productHtml = `<div>
+                                <p>Name: ${product.name}</p>
+                                <p>Price: ${product.price}€</p>
+                                <img src="${product.thumbnail}" alt="${product.name}">
+                                <button class='details-btn' data-slug='${product.slug}'>View Details</button>
+                            </div>`;
+                            // Add this HTML to the div with the ID "products"
+                            $('#products').append(productHtml);
+                        });
+
+                        // Add a click handler to the "View Details" buttons
+                        $('.details-btn').click(function() {
+                            var slug = $(this).data('slug');
+                            window.location.href = `http://20.199.21.250:8002/product-details-page/${slug}/`;
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching products:', xhr.responseText); // Debug: log the error response
+                        $('#products').html('<p>Failed to load products.</p>');
+                    }
+                });
+            }
+
+            // Handle login form submission
+            $('#loginForm').submit(function(event) {
+                event.preventDefault();
+                const username = $('#username').val();
+                const password = $('#password').val();
+
+                $.ajax({
+                    url: 'http://20.199.21.250:8001/auth/login/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username, password }),
+                    success: function(data) {
+                        console.log('Login successful:', data);  // Debug: log the success response
+                        localStorage.setItem('access_token', data.access);
+                        displayLoginStatus();
+                        getProducts(); // Fetch products again after login
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error logging in:', xhr.responseText); // Debug: log the error response
+                        alert('Login failed');
+                    }
+                });
+            });
+
+            // Initial display
+            displayLoginStatus();
+            getProducts();
+        });
+    </script>
+    
+    
+</body>
+</html>

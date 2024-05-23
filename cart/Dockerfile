@@ -1,4 +1,4 @@
-FROM python:3.6.4-slim
+FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED 1
 
@@ -7,4 +7,5 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip3 install -r requirements.txt
+
+RUN pip install -r requirements.txt 

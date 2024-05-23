@@ -14,8 +14,14 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+# Add this to specify the static files directories
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -26,7 +32,7 @@ SECRET_KEY = 'django-insecure-d-4lk%vu6!(-k0skl9jrofw#d#mv-of9%8fzzu4e7d(xqzu*@^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['20.199.21.250']
 
 
 # Application definition
@@ -41,11 +47,20 @@ INSTALLED_APPS = [
     'products',
     'corsheaders',
     'rest_framework',
-    
+    'rest_framework_simplejwt',
 ]
 
-AUTHENTICATION_MICROSERVICE_URL='http://127.0.0.1:8000'
-CART_MICROSERVICE_URL='http://127.0.0.1:8002'
+
+CORS_ORIGIN_ALLOW_ALL = True  
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+AUTHENTICATION_MICROSERVICE_URL='http://20.199.21.250:8001/'
+CART_MICROSERVICE_URL='http://20.199.21.250:8003/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,10 +75,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api.urls'
 
+# Template files
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [],  # Leave this empty since templates are within app directories
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,10 +100,10 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ppc5',
-        'USER': 'postgres',
-        'PASSWORD': '0000',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'douaadb',
+        'USER': 'douaa',
+        'PASSWORD': 'douaapass',
         'HOST': 'db',
         'PORT': '5432',
     }
@@ -129,7 +145,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

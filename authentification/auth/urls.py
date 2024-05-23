@@ -17,15 +17,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token
-from app.views import RegistrationAPIView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from app.views import RegistrationAPIView, getusers, getuser, LogoutView, TokenBlacklistCheck
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('api/v1/auth/auth-token', obtain_auth_token, name='obtain-auth-token')
     path('auth/register/', RegistrationAPIView.as_view(), name='register'),
     path('auth/login/', TokenObtainPairView.as_view(), name='login'),
-    path('auth/refresh-token', TokenRefreshView.as_view(), name='refreshtoken'),
+    path('auth/refresh-token/', TokenRefreshView.as_view(), name='refreshtoken'),
+    path('auth/users/', getusers, name='getusers'),
+    path('auth/user/<int:pk>/', getuser, name='getuser'),
+    path('auth/logout/', LogoutView.as_view(), name='auth_logout'),
+    path('token/blacklist-check/', TokenBlacklistCheck.as_view(), name='token_blacklist_check'),
+
+
 
 ]
 
