@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 from django.conf.global_settings import DEFAULT_AUTO_FIELD
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -58,6 +58,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'BLACKLIST_AFTER_ROTATION': True,
     'ROTATE_REFRESH_TOKENS': True,
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=15),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=15),
 }
 
 
@@ -119,7 +121,7 @@ CACHES = {
 }
 
 # Cache timeout for token blacklist
-TOKEN_BLACKLIST_CACHE_TIMEOUT = 3600  # 1 hour (adjust as needed)
+TOKEN_BLACKLIST_CACHE_TIMEOUT = 14400  # 1 hour (adjust as needed)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

@@ -272,7 +272,11 @@
             }
           }
         </style>
+
+        
+        
     </head>
+    
     <body>
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -294,11 +298,15 @@
                         </li>
                     </ul>
                     <div class="d-flex">
-                        <button class="btn btn-outline-dark" type="submit">
-                          <i class="bi-cart-fill me-1"></i>
-                          Cart
-                          <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                        </button>
+                      <button class="btn btn-outline-dark" onclick="document.getElementById('signupmodal').style.display='block'" id="signupbtn">
+                        <i class="bi-person-plus-fill me-1"></i>
+                        SignUp
+                      </button>
+                      <button class="btn btn-outline-dark" type="submit" id="cartbtn" onclick="location.href='/cart/'">
+                        <i class="bi-cart-fill me-1"></i>
+                        Cart
+                        <span class="badge bg-dark text-white ms-1 rounded-pill" id="total-items"></span>
+                      </button>
                         &nbsp; 
                         <div id="login-form">
                           
@@ -356,6 +364,68 @@
                             <button
                               class="button-20"
                               onclick="document.getElementById('id01').style.display='none'"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                      <div id="signupmodal" class="modal">
+                        <form
+                          class="modal-content animate"
+                          action="/"
+                          method="post"
+                          id="signupForm"
+                        >
+                          <div class="imgcontainer">
+                            <span
+                              onclick="document.getElementById('signupmodal').style.display='none'"
+                              class="close"
+                              title="Close Modal"
+                              >&times;</span>
+                          </div>
+                          <div class="container">
+                            <label for="name"><b>First Name</b></label>
+                            <input
+                              type="text"
+                              placeholder="Enter First Name"
+                              name="firstname"
+                              id="firstname"
+                              required
+                            />
+                            <label for="lastname"><b>Last Name</b></label>
+                            <input
+                              type="text"
+                              placeholder="Enter Last Name"
+                              name="lastname"
+                              id="lastname"
+                              required
+                            />
+            
+                            <label for="username1"><b>Username</b></label>
+                            <input
+                              type="text"
+                              placeholder="Enter Username"
+                              name="username1"
+                              id="username1"
+                              required
+                            />
+            
+                            <label for="password1"><b>Password</b></label>
+                            <input
+                              type="password"
+                              placeholder="Enter Password"
+                              name="password1"
+                              id="password1"
+                              required
+                            />
+                            <button class="button-19" role="button" type="submit">
+                              Create Account
+                            </button>
+                            &nbsp; 
+                            <button
+                              class="button-20"
+                              onclick="document.getElementById('signupmodal').style.display='none'"
                             >
                               Cancel
                             </button>
@@ -433,7 +503,7 @@
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+                                <div class="text-center"><a  class="btn btn-outline-dark mt-auto">Add to cart</a></div>
                             </div>
                         </div>
                     </div>
@@ -615,14 +685,16 @@
                     `<br>&nbsp; <span>Welcome, ${user.username}</span>`
                   );
                   $("#login-form").hide();
+                  $("#signupbtn").hide();
                   $("#logoutBtn").show();
+                  $("#cartbtn").show();
                   
                   
                 } else {
                   //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
                   $("#login-form").show();
-                  
                   $("#logoutBtn").hide();
+                  $("#cartbtn").hide();
                   
                   
                 }
@@ -632,12 +704,14 @@
                 $("#login-form").show();
 
                 $("#logoutBtn").hide();
+                $("#cartbtn").hide();
               });
           } else {
             //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
             $("#login-form").show();
 
-            $("#logoutBtn").hide();;
+            $("#logoutBtn").hide();
+            $("#cartbtn").hide();
           }
         }
 
@@ -661,10 +735,48 @@
                 }
                 const product = await response.json();
                 displayProduct(product);
+
+                const productId = product.id;
+                console.log('Product ID:', productId);
             } catch (error) {
                 console.error('There was a problem with the fetch operation:', error);
             }
         }
+        async function fetchCart() {
+          const token = getToken();
+          const userId = getUserIDFromToken(token);
+          if (userId) {
+            try {
+                const response = await fetch(`http://20.199.21.250:8003/cart/${userId}/`, {
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const cartItems = await response.json();
+                displayTotalItems(cartItems);
+            } catch (error) {
+                console.error('Failed to fetch cart:', error);
+              }
+            }
+        }
+  
+        function displayTotalItems(cartItems) {
+              // Calculate the total number of items in the cart
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  
+              // Display the total number of items
+            const totalItemsElement = document.getElementById('total-items');
+            totalItemsElement.textContent = `${totalItems}`;
+        }
+        
+        fetchCart();
+  
+          // Fetch the cart when the page loads
+        //document.addEventListener('DOMContentLoaded', fetchCart);
 
         // Get products and include the JWT token in the request
         function displayProduct(product) {
@@ -682,7 +794,7 @@
                         <p class="lead">In Stock : ${product.stock}</p>
                         <div class="d-flex">
                             <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
-                            <button class="btn btn-outline-dark flex-shrink-0" type="button">
+                            <button class="btn btn-outline-dark flex-shrink-0" type="button" onclick="fetchProductIdAndAddToCart()" id="add-to-cart-btn">
                                 <i class="bi-cart-fill me-1"></i>
                                 Add to cart
                             </button>
@@ -714,7 +826,8 @@
               localStorage.setItem("accessToken", data.access);
               localStorage.setItem('refreshToken', data.refresh);
               displayLoginStatus();
-              getProducts(); // Fetch products again after login
+              fetchCart();
+              //getProducts(); // Fetch products again after login
             },
             error: function (xhr, status, error) {
               console.error("Error logging in:", xhr.responseText); // Debug: log the error response
@@ -723,9 +836,33 @@
           });
         });
 
+        $("#signupForm").submit(function (event) {
+          event.preventDefault();
+          const first_name = $("#firstname").val();
+          const last_name = $("#lastname").val();
+          const username = $("#username1").val();
+          const password = $("#password1").val();
+
+          $.ajax({
+            url: "http://20.199.21.250:8001/auth/register/",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ first_name, last_name, username, password }),
+            success: function (data) {
+              console.log("Signup successful:", data); // Debug: log the success response
+              $("#signupmodal").hide();
+              alert("Account Created Successfully");
+            },
+            error: function (xhr, status, error) {
+              console.error("Error Signing up:", xhr.responseText); // Debug: log the error response
+              alert("Signup failed");
+            },
+          });
+        });
+
         // Initial display
         displayLoginStatus();
-        getProducts();
+        //getProducts();
       });
     </script>
 
@@ -771,9 +908,87 @@
             });
         });
   </script>
+
+
+
+  <script>
+
+    async function fetchProductIdAndAddToCart() {
+      const slug = getSlugFromUrl();
+      if (!slug) {
+          console.error('No slug parameter found in URL');
+          return;
+      }
+      
+      try {
+          const response = await fetch(`http://20.199.21.250:8002/item/${slug}/`);
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          const product = await response.json();
+          
+          // Extract the product ID
+          const productId = product.id;
+          if (productId) {
+              console.log('Product ID xxx:', productId);
+              addToCart(productId);
+          } else {
+              console.error('Product ID is undefined');
+          }
+      } catch (error) {
+          console.error('There was a problem with the fetch operation:', error);
+      }
+    }
+
+    function getSlugFromUrl() {
+      const urlPath = window.location.pathname;
+      const pathSegments = urlPath.split('/');
+      return pathSegments[pathSegments.length - 2];
+    }
+    
+    function getUserIDFromToken(token) {
+      if (!token) return null;
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        console.log("JWT Payload:", payload);
+        return payload.user_id;
+      } catch (e) {
+        console.error("Invalid token:", e);
+        return null;
+      }
+    }
+
+    function addToCart(productId) {
+        //const productId = document.getElementById('add-to-cart-btn').dataset.productId;
+        const token = localStorage.getItem('accessToken');
+        const user_id = getUserIDFromToken(token);
+        if (!token) {
+            alert('You must be logged in to add items to the cart.');
+            return;
+        }
+
+        $.ajax({
+            url: `http://20.199.21.250:8003/cart/${productId}/${user_id}/`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                location.reload();
+                //alert('Product added to cart');
+            },
+            error: function(response) {
+                alert('Failed to add product to cart');
+            }
+        });
+    }
+
+  </script>
+
         <!-- Footer-->
         <footer class="py-5 bg-dark">
-            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; My Shop ❤ 2024</p></div>
         </footer>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

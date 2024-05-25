@@ -13,26 +13,42 @@ from rest_framework.decorators import api_view,permission_classes
 from rest_framework.views import APIView
 
 import requests
-
+PRODUCT_SERVICE_URL = 'http://20.199.21.250:8002/prd/'
 
 def test(request):
     return HttpResponse('fine')
 
 class CartView(APIView):
-    def post(self, request, product_id):
-        user_id = request.user.id
-        cart_key = f"cart_{user_id}"
-        redis_conn = get_redis_connection("default")
-        redis_conn.hincrby(cart_key, product_id, 1)
-        return Response(status=status.HTTP_201_CREATED)
 
-    def get(self, request):
-        user_id = request.user.id
-        cart_key = f"cart_{user_id}"
+    def get_cart_key(self, user_id):
+        return f"cart_{user_id}"
+
+    def post(self, request, product_id,user_id):
+        cart_key = self.get_cart_key(user_id)
+        redis_conn = get_redis_connection("default")
+
+        # Increment the quantity of the product in the user's cart
+        redis_conn.hincrby(cart_key, product_id, 1)
+
+        return Response(status=status.HTTP_201_CREATED)
+    
+    def get(self, request,user_id):
+        cart_key = self.get_cart_key(user_id)
         redis_conn = get_redis_connection("default")
         cart_items = redis_conn.hgetall(cart_key)
         cart = {int(k.decode('utf-8')): int(v.decode('utf-8')) for k, v in cart_items.items()}
-        return Response(cart)
+
+        detailed_cart = []
+        for product_id, quantity in cart.items():
+            product_response = requests.get(f"{PRODUCT_SERVICE_URL}{product_id}/")
+            if product_response.status_code == 200:
+                product_data = product_response.json()
+                product_data['quantity'] = quantity
+                detailed_cart.append(product_data)
+            else:
+                detailed_cart.append({'product_id': product_id, 'quantity': quantity, 'error': 'Product details not found'})
+
+        return Response(detailed_cart)
 
     def delete(self, request, product_id):
         user_id = request.user.id

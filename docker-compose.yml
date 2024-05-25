@@ -8,11 +8,7 @@ services:
     ports:
       - "8000:8000"
     restart: always
-    depends_on:
-      - db
-    links:
-      - db
-      
+
   auth_app:
     build: ./authentification
     command: bash -c "python ./manage.py makemigrations && python ./manage.py migrate && python ./manage.py runserver 0.0.0.0:8001"
@@ -21,10 +17,6 @@ services:
     ports:
       - "8001:8001"
     restart: always
-    depends_on:
-      - db
-    links:
-      - db
 
   products_app:
     build: ./products
@@ -49,10 +41,7 @@ services:
     ports:
       - "8003:8003"
     restart: always
-    depends_on:
-      - db
-    links:
-      - db
+
 
   db:
     image: postgres:latest

@@ -1,9 +1,11 @@
 from django.shortcuts import redirect, render
 from rest_framework import generics ,status , permissions , serializers
 from django.contrib.auth.models import User
-from .serializers import RegistrationSerializer, UserSerializer
+from .serializers import RegistrationSerializer, UserSerializer, SingUpSerializer
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 import uuid
+from django.contrib.auth.hashers import make_password
 from django.contrib.sessions.models import Session
 import jwt
 from django.conf import settings
@@ -12,6 +14,37 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.views import APIView
 from django.core.cache import cache
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import redirect
+
+
+
+
+@api_view(['POST'])
+def register(request):
+    data = request.data
+    user = SingUpSerializer(data = data)
+
+    if user.is_valid():
+        if not User.objects.filter(username=data['username']).exists():
+            user = User.objects.create(
+                first_name = data['first_name'],
+                last_name = data['last_name'], 
+                username = data['username'] , 
+                password = make_password(data['password']),
+            )
+            return Response(
+                {'details':'Your account registered susccessfully!' },
+                    status=status.HTTP_201_CREATED
+                    )
+        else:
+            return Response(
+                {'eroor':'This email already exists!' },
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
+    else:
+        return Response(user.errors)
+
+
 
 def generate_access_token(user):
     payload = {
@@ -22,7 +55,7 @@ def generate_access_token(user):
     return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
 
-from django.shortcuts import redirect
+
 
 class RegistrationAPIView(generics.GenericAPIView):
 

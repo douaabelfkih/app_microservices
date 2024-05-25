@@ -150,5 +150,13 @@ def view_product(request,slug):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+def view_product1(request,id):
+    product = Product.objects.get(pk=id)
+    if product:
+        serializer = ProductSerializer(product)
+        return JsonResponse(serializer.data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
 def index(request):
     return render(request, 'index.html')

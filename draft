@@ -1,9 +1,29 @@
-"""     path('add/', add_to_cart, name='add_to_cart'),
-
-    path('addcart/', add_new_cart, name='add_new_cart'),
-    path('carts/', view_carts, name='view_carts'),
-    path('additemtocart/', add_item_to_cart, name='add_item_to_cart'),
-
-    path('api/cart/', CartView.as_view(), name='cart'),
-    path('api/cart/items/', CartItemView.as_view(), name='cart-items'),
-    path('api/cart/migrate/', MigrateCartView.as_view(), name='cart-migrate'), """
+        async function fetchCart() {
+            try {
+                const token = getToken();
+                const userId = getUserIDFromToken(token);
+                const response = await fetch(`http://20.199.21.250:8003/cart/${userId}/`, {
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const cartItems = await response.json();
+                displayTotalItems(cartItems);
+            } catch (error) {
+                console.error('Failed to fetch cart:', error);
+                alert('Failed to fetch cart');
+              }
+        }
+  
+        function displayTotalItems(cartItems) {
+              // Calculate the total number of items in the cart
+            const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  
+              // Display the total number of items
+            const totalItemsElement = document.getElementById('total-items');
+            totalItemsElement.textContent = `Total items: ${totalItems}`;
+        }

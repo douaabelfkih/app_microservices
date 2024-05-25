@@ -17,13 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token
-from app.views import RegistrationAPIView, getusers, getuser, LogoutView, TokenBlacklistCheck
+from app.views import RegistrationAPIView, getusers, getuser, LogoutView, TokenBlacklistCheck, register
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('api/v1/auth/auth-token', obtain_auth_token, name='obtain-auth-token')
-    path('auth/register/', RegistrationAPIView.as_view(), name='register'),
+    #path('auth/register/', RegistrationAPIView.as_view(), name='register'),
+    path('auth/register/', register, name='register'),
     path('auth/login/', TokenObtainPairView.as_view(), name='login'),
     path('auth/refresh-token/', TokenRefreshView.as_view(), name='refreshtoken'),
     path('auth/users/', getusers, name='getusers'),
