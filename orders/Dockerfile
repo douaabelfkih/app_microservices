@@ -1,11 +1,11 @@
-FROM python:3.6.4-slim
+FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir /code
-
-WORKDIR /code
+RUN mkdir /app
+WORKDIR /app
 
 COPY . .
 
-RUN pip install -r requirements.txt
+
+RUN pip install -r requirements.txt 

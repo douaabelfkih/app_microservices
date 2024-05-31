@@ -1,8 +1,10 @@
-from django.urls import path
-from . import views
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import OrderViewSet
 
-# TODO: add here your API URLs
+
 
 urlpatterns = [
-	path("orders/add/", views.add_order)
+
 ]

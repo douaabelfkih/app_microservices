@@ -11,3 +11,6 @@ def item(request,slug):
 def cart(request):
     return render(request, 'cart.html')
 
+def orders(request):
+    return render(request, 'orders.html')
+

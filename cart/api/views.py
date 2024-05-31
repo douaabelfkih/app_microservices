@@ -27,8 +27,19 @@ class CartView(APIView):
         cart_key = self.get_cart_key(user_id)
         redis_conn = get_redis_connection("default")
 
+        # Get the quantity from the request data
+        quantity = request.data.get('quantity', 1)
+
+        try:
+            quantity = int(quantity)
+            if quantity < 1:
+                return Response({'error': 'Quantity must be a positive integer'}, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            return Response({'error': 'Invalid quantity value'}, status=status.HTTP_400_BAD_REQUEST)
+
+
         # Increment the quantity of the product in the user's cart
-        redis_conn.hincrby(cart_key, product_id, 1)
+        redis_conn.hincrby(cart_key, product_id, quantity)
 
         return Response(status=status.HTTP_201_CREATED)
     
@@ -50,12 +61,25 @@ class CartView(APIView):
 
         return Response(detailed_cart)
 
-    def delete(self, request, product_id):
+    """ def delete(self, request, product_id):
         user_id = request.user.id
         cart_key = f"cart_{user_id}"
         redis_conn = get_redis_connection("default")
         redis_conn.hdel(cart_key, product_id)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT) """
+
+    def delete(self, request, product_id=None, user_id=None):
+        cart_key = self.get_cart_key(user_id)
+        redis_conn = get_redis_connection("default")
+        
+        if product_id:
+            # Remove the specific product from the user's cart
+            redis_conn.hdel(cart_key, product_id)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            # Clear the entire cart for the user
+            redis_conn.delete(cart_key)
+            return Response(status=status.HTTP_204_NO_CONTENT)
     
     
 

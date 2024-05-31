@@ -45,7 +45,6 @@ def register(request):
         return Response(user.errors)
 
 
-
 def generate_access_token(user):
     payload = {
         'user_id': user.id,

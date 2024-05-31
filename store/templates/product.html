@@ -286,7 +286,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/orders">Orders</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -793,7 +793,7 @@
                         <p class="lead">Description : ${product.description}</p>
                         <p class="lead">In Stock : ${product.stock}</p>
                         <div class="d-flex">
-                            <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
+                            <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" min="1" max=${product.stock} style="max-width: 3rem" />
                             <button class="btn btn-outline-dark flex-shrink-0" type="button" onclick="fetchProductIdAndAddToCart()" id="add-to-cart-btn">
                                 <i class="bi-cart-fill me-1"></i>
                                 Add to cart
@@ -915,6 +915,7 @@
 
     async function fetchProductIdAndAddToCart() {
       const slug = getSlugFromUrl();
+      const quantity = document.getElementById('inputQuantity').value;
       if (!slug) {
           console.error('No slug parameter found in URL');
           return;
@@ -931,7 +932,8 @@
           const productId = product.id;
           if (productId) {
               console.log('Product ID xxx:', productId);
-              addToCart(productId);
+              console.log('Product quantity xxx:', quantity);
+              addToCart(productId,quantity);
           } else {
               console.error('Product ID is undefined');
           }
@@ -958,7 +960,7 @@
       }
     }
 
-    function addToCart(productId) {
+    function addToCart(productId,quantity) {
         //const productId = document.getElementById('add-to-cart-btn').dataset.productId;
         const token = localStorage.getItem('accessToken');
         const user_id = getUserIDFromToken(token);
@@ -974,6 +976,7 @@
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
             },
+            data: JSON.stringify({ quantity: quantity }),
             success: function(response) {
                 location.reload();
                 //alert('Product added to cart');

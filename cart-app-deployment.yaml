@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.33.0 (3ce457399)
+  labels:
+    io.kompose.service: cart-app
+  name: cart-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cart-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.33.0 (3ce457399)
+      labels:
+        io.kompose.network/micro-default: "true"
+        io.kompose.service: cart-app
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - python3 ./manage.py runserver 0.0.0.0:8003
+          image: cart-app
+          name: cart-app
+          ports:
+            - containerPort: 8003
+              hostPort: 8003
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app
+              name: cart-app-cm0
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            name: cart-app-cm0
+          name: cart-app-cm0

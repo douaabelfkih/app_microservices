@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Your Orders</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <style>
+          body {
+            font-family: Arial, Helvetica, sans-serif;
+          }
+    
+          .cart-container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .cart {
+            width: 100%;
+        }
+
+        .cart-header, .cart-item, .cart-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-header {
+            font-weight: bold;
+            background-color: #f8f8f8;
+        }
+
+        .cart-item {
+            background-color: #fff;
+        }
+
+        .cart-footer {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-image, .product-title, .product-price, .product-quantity, .product-total, .product-remove {
+            flex: 1;
+            text-align: center;
+        }
+
+        .product-image {
+            flex: 0.5;
+        }
+
+        .product-image img {
+            width: 50px;
+            height: auto;
+        }
+
+        .product-quantity input {
+            width: 50px;
+            text-align: center;
+        }
+
+        .button-20 {
+            appearance: button;
+            background-color: #cc0052;
+            border: solid transparent;
+            border-radius: 16px;
+            border-width: 0 0 4px;
+            box-sizing: border-box;
+            color: #ffffff;
+            cursor: pointer;
+            display: inline-block;
+            font-family: din-round, sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            line-height: 20px;
+            margin: 0;
+            outline: none;
+            overflow: visible;
+            padding: 13px 16px;
+            text-align: center;
+            text-transform: uppercase;
+            touch-action: manipulation;
+            transform: translateZ(0);
+            transition: filter 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+            vertical-align: middle;
+            white-space: nowrap;
+            width: 100%;
+          }
+    
+          .button-20:after {
+            background-clip: padding-box;
+            background-color: #ff0066;
+            border: solid transparent;
+            border-radius: 16px;
+            border-width: 0 0 4px;
+            bottom: -4px;
+            content: "";
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: -1;
+          }
+    
+          .button-20:main,
+          .button-20:focus {
+            user-select: auto;
+          }
+    
+          .button-20:hover:not(:disabled) {
+            filter: brightness(1.1);
+            -webkit-filter: brightness(1.1);
+          }
+    
+          .button-20:disabled {
+            cursor: auto;
+          }
+    
+          .button-20:active {
+            border-width: 4px 0 0;
+            background: none;
+          }
+
+        .button-19 {
+            appearance: button;
+            background-color: #1899d6;
+            border: solid transparent;
+            border-radius: 16px;
+            border-width: 0 0 4px;
+            box-sizing: border-box;
+            color: #ffffff;
+            cursor: pointer;
+            display: inline-block;
+            font-family: din-round, sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            line-height: 20px;
+            margin: 0;
+            outline: none;
+            overflow: visible;
+            padding: 13px 16px;
+            text-align: center;
+            text-transform: uppercase;
+            touch-action: manipulation;
+            transform: translateZ(0);
+            transition: filter 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+            vertical-align: middle;
+            white-space: nowrap;
+            width: 100%;
+          }
+    
+          .button-19:after {
+            background-clip: padding-box;
+            background-color: #1cb0f6;
+            border: solid transparent;
+            border-radius: 16px;
+            border-width: 0 0 4px;
+            bottom: -4px;
+            content: "";
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: -1;
+          }
+    
+          .button-19:main,
+          .button-19:focus {
+            user-select: auto;
+          }
+    
+          .button-19:hover:not(:disabled) {
+            filter: brightness(1.1);
+            -webkit-filter: brightness(1.1);
+          }
+    
+          .button-19:disabled {
+            cursor: auto;
+          }
+    
+          .button-19:active {
+            border-width: 4px 0 0;
+            background: none;
+          }
+
+
+          .button-21 {
+            appearance: button;
+            background-color: #229600;
+            border: solid transparent;
+            border-radius: 16px;
+            border-width: 0 0 4px;
+            box-sizing: border-box;
+            color: #ffffff;
+            cursor: pointer;
+            display: inline-block;
+            font-family: din-round, sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            line-height: 20px;
+            margin: 0;
+            outline: none;
+            overflow: visible;
+            padding: 13px 16px;
+            text-align: center;
+            text-transform: uppercase;
+            touch-action: manipulation;
+            transform: translateZ(0);
+            transition: filter 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+            vertical-align: middle;
+            white-space: nowrap;
+            width: 100%;
+          }
+    
+          .button-21:after {
+            background-clip: padding-box;
+            background-color: #34c10c;
+            border: solid transparent;
+            border-radius: 16px;
+            border-width: 0 0 4px;
+            bottom: -4px;
+            content: "";
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: -1;
+          }
+    
+          .button-21:main,
+          .button-21:focus {
+            user-select: auto;
+          }
+    
+          .button-21:hover:not(:disabled) {
+            filter: brightness(1.1);
+            -webkit-filter: brightness(1.1);
+          }
+    
+          .button-21:disabled {
+            cursor: auto;
+          }
+    
+          .button-21:active {
+            border-width: 4px 0 0;
+            background: none;
+          }
+            .order {
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            .order-header {
+                font-weight: bold;
+            }
+            .product {
+                margin-left: 20px;
+                margin-top: 10px;
+            }
+            .product img {
+                max-width: 100px;
+                display: block;
+            }
+
+        </style>
+
+        
+        
+    </head>
+    
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="/">My Shop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link " aria-current="page" href="#!">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="/orders">Orders</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#!">All Products</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                                <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                      <button class="btn btn-outline-dark" type="submit" id="cartbtn" onclick="location.href='/cart/'">
+                        <i class="bi-cart-fill me-1"></i>
+                        Cart
+                        <span class="badge bg-dark text-white ms-1 rounded-pill" id="total-items"></span>
+                      </button>
+                        &nbsp; 
+                      </div>
+                      <div class="d-flex" id="logout" >
+                        <button class="btn btn-outline-dark" id="logoutBtn">
+                          <i class="bi-person-fill me-1"></i>Logout
+                        </button>
+                      </div>
+                      <div id="response"></div> 
+
+                      
+                      <!-- Add an element to display login status -->
+                        <div id="login-status" class="mb-3"></div>
+
+                     
+
+{% comment %}                     <form class="d-flex">
+                        <button class="btn btn-outline-dark" type="submit">
+                            <i class="bi-cart-fill me-1"></i>
+                            Cart
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        </button>
+                    </form> {% endcomment %}
+                </div>
+            </div>
+        </nav>
+        <!-- Product section-->
+        <section class="py-5">
+            <h1>Your orders </h1>
+            <div class="container px-4 px-lg-5 my-5" id="product-container">
+                <div class="cart">
+            <div id="order-list"></div>
+                </div></div>
+
+        </section>
+
+
+
+
+    
+    <!--new script-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(function () {
+        // Function to get the JWT token from localStorage
+        function getToken() {
+          return localStorage.getItem("accessToken");
+        }
+
+        // Function to get the username from the JWT token
+        function getUserIDFromToken(token) {
+          if (!token) return null;
+          try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            console.log("JWT Payload:", payload);
+            return payload.user_id;
+          } catch (e) {
+            console.error("Invalid token:", e);
+            return null;
+          }
+        }
+        // Function to fetch user details using user_id
+        function fetchUserDetails(user_id) {
+          return $.ajax({
+            url: `http://20.199.21.250:8001/auth/user/${user_id}/`,
+            type: "GET",
+            headers: {
+              Authorization: `Bearer ${getToken()}`,
+            },
+          });
+        }
+
+        // Display login status
+        function displayLoginStatus() {
+          const token = getToken();
+          const user_id = getUserIDFromToken(token);
+
+          if (user_id) {
+            fetchUserDetails(user_id)
+              .done(function (user) {
+                if (user) {
+                  $("#login-status").html(
+                    `<br>&nbsp; <span>Welcome, ${user.username}</span>`
+                  );
+                  $("#cartbtn").show();
+                  
+                  
+                } else {
+                  //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
+                  window.location.replace("http://20.199.21.250:8000/");
+                  $("#cartbtn").hide();
+                }
+              })
+              .fail(function () {
+                //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
+                window.location.replace("http://20.199.21.250:8000/");
+                $("#cartbtn").hide();
+              });
+          } else {
+            //$('#login-status').html(`<a href="/auth/login/" class="btn btn-primary">Login</a>`);
+            window.location.replace("http://20.199.21.250:8000/");
+            $("#cartbtn").hide();
+          }
+        }
+        displayLoginStatus();
+        //getProducts();
+      });
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          document.getElementById('logoutBtn').addEventListener('click', function(event) {
+              event.preventDefault(); // Prevent the default button action
+
+              const accessToken = localStorage.getItem('accessToken'); // Retrieve access token from localStorage
+              const refreshToken = localStorage.getItem('refreshToken'); // Retrieve refresh token from localStorage
+
+              if (!refreshToken) {
+                  document.getElementById('response').innerText = 'Refresh token not found';
+                  return;
+              }
+
+              // Post data to API
+              fetch('http://20.199.21.250:8001/auth/logout/', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ' + accessToken
+                  },
+                  body: JSON.stringify({ refresh: refreshToken })
+              })
+              .then(response => {
+                    if (response.status === 205) {
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        document.getElementById('response').innerText = 'Logout successful';
+                        $("#login-status").hide();
+                        location.reload();
+                    } else {
+                        return response.json().then(data => {
+                            throw new Error(JSON.stringify(data));
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    document.getElementById('response').innerText = 'Error: ' + error.message || error;
+                });
+            });
+        });
+  </script>
+  <script>
+    function getToken() {
+        return localStorage.getItem("accessToken");
+      }
+
+      // Function to get the username from the JWT token
+    function getUserIDFromToken(token) {
+        if (!token) return null;
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          console.log("JWT Payload:", payload);
+          return payload.user_id;
+        } catch (e) {
+          console.error("Invalid token:", e);
+          return null;
+        }
+      }
+
+
+    async function fetchOrders() {
+        const token = getToken();
+        const user_id = getUserIDFromToken(token);
+
+        try {
+            const response = await fetch(`http://20.199.21.250:8004/api/orders/filter_by_username/?user_id=${user_id}`);
+            if (response.ok) {
+                const orders = await response.json();
+                displayOrders(orders);
+            } else {
+                console.error('Failed to fetch orders');
+            }
+        } catch (error) {
+            console.error('Error fetching username or orders:', error);
+        }
+    }
+
+    // Function to display orders in HTML
+    function displayOrders(orders) {
+        const orderList = document.getElementById('order-list');
+
+        orders.forEach(order => {
+            const orderDiv = document.createElement('div');
+            orderDiv.className = 'order';
+
+            const orderHeader = document.createElement('div');
+            orderHeader.className = 'order-header';
+            orderHeader.innerText = `Order ID: ${order.id} | Total cost: $${order.order_cost} | Date: ${new Date(order.created_at).toLocaleString()}`;
+            orderDiv.appendChild(orderHeader);
+
+            order.items.forEach(item => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+
+                const productImage = document.createElement('img');
+                productImage.src = `http://20.199.21.250:8002${item.product.thumbnail}`;
+                productImage.alt = item.product.name;
+                productDiv.appendChild(productImage);
+
+                const productInfo = document.createElement('div');
+                productInfo.innerHTML = `
+                    <div><strong>${item.product.name}</strong></div>
+                    <div>Price: $${item.product.price.toFixed(2)}</div>
+                    <div>Quantity: ${item.quantity}</div>
+                    <div>Total: $${(item.product.price * item.quantity).toFixed(2)}</div>
+                `;
+                productDiv.appendChild(productInfo);
+
+                orderDiv.appendChild(productDiv);
+            });
+
+            orderList.appendChild(orderDiv);
+        });
+    }
+    async function fetchCart() {
+        const token = getToken();
+        const userId = getUserIDFromToken(token);
+        if (userId) {
+          try {
+              const response = await fetch(`http://20.199.21.250:8003/cart/${userId}/`, {
+                  headers: {
+                      'Authorization': `Token ${token}`,
+                      'Content-Type': 'application/json'
+                  }
+              });
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              const cartItems = await response.json();
+              displayTotalItems(cartItems);
+          } catch (error) {
+              console.error('Failed to fetch cart:', error);
+            }
+          }
+      }
+
+      function displayTotalItems(cartItems) {
+            // Calculate the total number of items in the cart
+          const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+            // Display the total number of items
+          const totalItemsElement = document.getElementById('total-items');
+          totalItemsElement.textContent = `${totalItems}`;
+      }
+      
+      fetchCart();
+
+    // Call the function to fetch and display orders
+    fetchOrders();
+</script>
+
+
+
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; My Shop ❤ 2024</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
+    </body>
+</html>
